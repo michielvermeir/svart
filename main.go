@@ -2,11 +2,14 @@ package main
 
 import (
 	"bufio"
+	"embed"
 	"fmt"
+	"log"
 	"os"
-	"strings"
 
 	tfenv "tfvars/tfenv"
+
+	"github.com/urfave/cli/v2"
 )
 
 func Map[T any](s []T, f func(T) T) []T {
@@ -17,16 +20,56 @@ func Map[T any](s []T, f func(T) T) []T {
 	return result
 }
 
+func isStdinEmpty() bool {
+	stdin, _ := os.Stdin.Stat()
+	return stdin.Size() == 0
+}
+
+var (
+	//go:embed VERSION
+	res embed.FS
+)
+
+func getAppVersion() string {
+	version, _ := res.ReadFile("VERSION")
+	return string(version)
+}
+
+var app = &cli.App{
+	Name:    "tfvars",
+	Usage:   "re-exports the contents of dotenv files as TF_VAR_*",
+	Version: getAppVersion(),
+	Action: func(*cli.Context) error {
+		if isStdinEmpty() {
+			log.Fatal("tfvars: no input, stdin empty\n")
+		}
+
+		stdin := bufio.NewScanner(os.Stdin)
+		tfvars := tfenv.Build(stdin)
+
+		if len(tfvars) == 0 {
+			fmt.Fprintf(os.Stderr, "tfvars: no variables in stdin to re-export\n")
+			os.Exit(1)
+		}
+
+		for _, tfvar := range tfvars {
+			fmt.Printf("export %s\n", tfvar)
+		}
+
+		return nil
+	},
+}
+
 func main() {
-	stdin := bufio.NewScanner(os.Stdin)
-	tfvars := tfenv.Build(stdin)
+	// Disable timestamp in log output
+	log.SetFlags(0)
 
-	fmt.Fprintf(os.Stderr, "tfvars: export %s\n",
-		strings.Join(Map(tfvars, func(tfvar string) string {
-			return fmt.Sprintf("+%s", strings.Split(tfvar, "=")[0])
-		}), " "))
+	cli.VersionFlag = &cli.BoolFlag{
+		Name:  "version",
+		Usage: "prints the version",
+	}
 
-	for _, tfvar := range tfvars {
-		fmt.Printf("export %s\n", tfvar)
+	if err := app.Run(os.Args); err != nil {
+		log.Fatal(err)
 	}
 }
