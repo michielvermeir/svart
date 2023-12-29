@@ -1,10 +1,12 @@
-package tfenv
+package exports
 
 import (
 	"bufio"
 	"fmt"
 	"regexp"
+	"sort"
 	"strings"
+	"tfvars/config"
 
 	"github.com/direnv/go-dotenv"
 )
@@ -18,21 +20,24 @@ type Line struct {
 	Value string
 }
 
-func (m *Line) AsTfvar() string {
-	return fmt.Sprintf("TF_VAR_%s=%s", strings.ToLower(m.Name), m.Value)
+func (m *Line) AsPrefixed() string {
+	prefix := config.Getenv("TFVARS_PREFIX", "TF_VAR_")
+	return fmt.Sprintf("%s%s=%s", prefix, strings.ToLower(m.Name), m.Value)
 }
 
-func matchLine(line string) (*Line, error) {
+func matchLine(line string) *Line {
 	match := SINGLE_LINE.MatchString(line)
 
 	if match {
 		parsed, _ := dotenv.Parse(line)
-		for key, value := range parsed {
-			return &Line{Name: key, Value: value}, nil
+		for name, value := range parsed {
+			if !config.IsBlocked(name) && config.IsAllowed(name) {
+				return &Line{Name: name, Value: value}
+			}
 		}
 	}
 
-	return nil, nil
+	return nil
 }
 
 func Build(buffer *bufio.Scanner) []string {
@@ -40,10 +45,10 @@ func Build(buffer *bufio.Scanner) []string {
 
 	for buffer.Scan() {
 		currentLine := buffer.Text()
-		match, _ := matchLine(currentLine)
+		match := matchLine(currentLine)
 
 		if match != nil {
-			tfvars = append(tfvars, match.AsTfvar())
+			tfvars = append(tfvars, match.AsPrefixed())
 		}
 	}
 
@@ -51,5 +56,6 @@ func Build(buffer *bufio.Scanner) []string {
 		fmt.Println(err)
 	}
 
+	sort.Strings(tfvars)
 	return tfvars
 }
