@@ -1,14 +1,11 @@
-package config
+package main
 
 import (
-	"log"
 	"os"
 	"strings"
 
 	filepath "path/filepath"
 )
-
-var Stderr = log.New(os.Stderr, "svart: ", 0)
 
 func Getenv(name, fallback string) string {
 	if _, found := os.LookupEnv(name); !found {
@@ -17,12 +14,28 @@ func Getenv(name, fallback string) string {
 	return os.Getenv(name)
 }
 
-func IsAllowed(name string) bool {
-	allowed := Getenv("SVART_ALLOWED", "*")
+func GetAllowed() []string {
+	allowlistFile := os.Getenv("SVART_ALLOWLIST_FILE")
 
-	// Stderr.Printf("allowed %s\n", allowed)
+	// Stderr.Printf("allowlist file %s\n", file)
+	if len(allowlistFile) != 0 {
+		allowed := GetEnvPairNamesFromFile(allowlistFile)
+		// Stderr.Printf("allowed names %v\n", allowed)
+		return allowed
+	}
 
-	for _, pattern := range strings.Split(allowed, ",") {
+	allowlistPatterns := os.Getenv("SVART_ALLOWLIST")
+	if len(allowlistPatterns) != 0 {
+		return strings.Split(allowlistPatterns, ",")
+	}
+
+	return []string{"*"}
+}
+
+func IsExportAllowed(name string) bool {
+	allowed := GetAllowed()
+
+	for _, pattern := range allowed {
 		match, _ := filepath.Match(pattern, name)
 		return match
 	}

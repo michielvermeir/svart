@@ -1,4 +1,4 @@
-package config
+package main
 
 import (
 	"os"
@@ -34,42 +34,42 @@ func TestGetenvActual(t *testing.T) {
 
 func TestIsAllowedWildcardTrue(t *testing.T) {
 	os.Setenv("SVART_ALLOWED", "*")
-	actual, _ := IsAllowed("foo")
+	actual, _ := IsExportAllowed("foo")
 	Assert(t, actual).Equals(true)
 }
 
 func TestIsAllowedWildcardPrefixTrue(t *testing.T) {
 	os.Setenv("SVART_ALLOWED", "foo*")
-	actual, _ := IsAllowed("foo")
+	actual, _ := IsExportAllowed("foo")
 	Assert(t, actual).Equals(true)
 }
 
 func TestIsAllowedLiteralTrue(t *testing.T) {
 	os.Setenv("SVART_ALLOWED", "foo")
-	actual, _ := IsAllowed("foo")
+	actual, _ := IsExportAllowed("foo")
 	Assert(t, actual).Equals(true)
 }
 
 func TestIsAllowedLiteralsTrue(t *testing.T) {
 	os.Setenv("SVART_ALLOWED", "bar,foo")
 
-	actual1, _ := IsAllowed("foo")
+	actual1, _ := IsExportAllowed("foo")
 	Assert(t, actual1).Equals(true)
 
-	actual2, _ := IsAllowed("bar")
+	actual2, _ := IsExportAllowed("bar")
 	Assert(t, actual2).Equals(true)
 }
 
 func TestIsAllowedLiteralsFalse(t *testing.T) {
 	os.Setenv("SVART_ALLOWED", "bar,baz")
 
-	actual, _ := IsAllowed("foo")
+	actual, _ := IsExportAllowed("foo")
 	Assert(t, actual).Equals(true)
 
-	actual1, _ := IsAllowed("baz")
+	actual1, _ := IsExportAllowed("baz")
 	Assert(t, actual1).Equals(true)
 
-	actual2, _ := IsAllowed("bar")
+	actual2, _ := IsExportAllowed("bar")
 	Assert(t, actual2).Equals(true)
 }
 

@@ -1,14 +1,10 @@
-package inputs
+package main
 
 import (
 	"bufio"
-	"log"
 	"os"
 	"strings"
-	"svart/cli"
 )
-
-var Stderr = log.New(os.Stderr, "svart: ", 0)
 
 func isStdinEmpty() bool {
 	stdin, _ := os.Stdin.Stat()
@@ -16,12 +12,12 @@ func isStdinEmpty() bool {
 }
 
 type input interface {
-	get(args *cli.Args) *bufio.Scanner
+	get(args *Args) *bufio.Scanner
 }
 
 type stdin struct{}
 
-func (input *stdin) get(args *cli.Args) *bufio.Scanner {
+func (input *stdin) get(args *Args) *bufio.Scanner {
 	Stderr.Print("reading from stdin\n")
 
 	if isStdinEmpty() {
@@ -33,7 +29,7 @@ func (input *stdin) get(args *cli.Args) *bufio.Scanner {
 
 type file struct{}
 
-func (input *file) get(args *cli.Args) *bufio.Scanner {
+func (input *file) get(args *Args) *bufio.Scanner {
 	Stderr.Printf("reading from file %s\n", *args.File.Value)
 
 	file, err := os.Open(*args.File.Value)
@@ -46,7 +42,7 @@ func (input *file) get(args *cli.Args) *bufio.Scanner {
 
 type environ struct{}
 
-func (input *environ) get(args *cli.Args) *bufio.Scanner {
+func (input *environ) get(args *Args) *bufio.Scanner {
 	Stderr.Print("reading from environment variables\n")
 
 	return bufio.NewScanner(
@@ -54,7 +50,7 @@ func (input *environ) get(args *cli.Args) *bufio.Scanner {
 	)
 }
 
-func reify(args *cli.Args) input {
+func reify(args *Args) input {
 	if *args.FromStdin.Value {
 		return &stdin{}
 	}
@@ -68,6 +64,6 @@ func reify(args *cli.Args) input {
 }
 
 // Gets a scanner for the appropriate input source (env, file or stdin)
-func Get(cliArgs *cli.Args) *bufio.Scanner {
+func GetCommandLineInputs(cliArgs *Args) *bufio.Scanner {
 	return reify(cliArgs).get(cliArgs)
 }

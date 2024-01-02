@@ -5,9 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"svart/cli"
-	"svart/exports"
-	"svart/inputs"
 )
 
 var (
@@ -28,7 +25,7 @@ func main() {
 	// Disable timestamp in log output
 	log.SetFlags(0)
 
-	args := cli.Initialize()
+	args := InitializeCommandLine()
 
 	Stderr.Printf("version %s\n", getAppVersion())
 
@@ -36,12 +33,12 @@ func main() {
 		os.Exit(0)
 	}
 
-	if *args.Prudent.Value {
-		os.Setenv("SVART_BLOCKED", "*")
+	if *args.AllowlistFile.Value != "" {
+		os.Setenv("SVART_ALLOWLIST_FILE", *args.AllowlistFile.Value)
 	}
 
-	inputs := inputs.Get(args)
-	svart := exports.Build(inputs)
+	inputs := GetCommandLineInputs(args)
+	svart := BuildExports(inputs)
 
 	if len(svart) == 0 {
 		Stderr.Fatalf("no variables to re-export\n")
