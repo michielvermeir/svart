@@ -56,7 +56,8 @@ jobs:
       env:
         GO111MODULE: on
       run: |-
-        GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -v -o svart
+        cp VERSION ./cmd/svart/
+        GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -v -o svart ./cmd/svart
         mv svart svart-${{ matrix.os }}-${{ matrix.arch }}
 
     - name: Upload release asset
