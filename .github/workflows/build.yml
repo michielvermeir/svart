@@ -30,4 +30,4 @@ jobs:
       - name: Build
         env:
           GO111MODULE: on
-        run: go build -v .
+        run: go build -v ./cmd/svart

@@ -1,12 +1,14 @@
 build:
-    go build -v -o svart . 
-    du -sh svart
+    cp VERSION ./cmd/svart
+    go build -v -o $GOPATH/bin/svart ./cmd/svart
+    du -sh bin/svart
+    rm ./cmd/svart/VERSION
 
 run: build
-    ./svart
+    exec ./bin/svart
 
 install: build
-    cp svart /usr/local/bin/svart
+    exec cp svart /usr/local/bin/svart
 
 bump-version arg:
     version {{arg}}

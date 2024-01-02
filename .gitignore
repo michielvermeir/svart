@@ -20,5 +20,6 @@
 # Go workspace file
 go.work
 
-# Build: binary
-svart
+# Go build binaries
+bin/
+.direnv/
