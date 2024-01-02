@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 )
 
 var (
@@ -32,6 +33,8 @@ func main() {
 	if *args.Version.Value {
 		os.Exit(0)
 	}
+
+	os.Setenv("SVART_RELAXED_MODE", strconv.FormatBool(*args.Relaxed.Value))
 
 	if *args.AllowlistFile.Value != "" {
 		os.Setenv("SVART_ALLOWLIST_FILE", *args.AllowlistFile.Value)

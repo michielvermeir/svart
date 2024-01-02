@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"strconv"
 	"strings"
 
 	filepath "path/filepath"
@@ -29,7 +30,12 @@ func GetAllowed() []string {
 		return strings.Split(allowlistPatterns, ",")
 	}
 
-	return []string{"*"}
+	if relaxed, _ := strconv.ParseBool(os.Getenv("SVART_RELAXED_MODE")); relaxed {
+		return []string{"*"}
+	}
+
+	// Strict mode by default
+	return []string{}
 }
 
 func IsExportAllowed(name string) bool {

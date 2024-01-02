@@ -9,11 +9,12 @@ type arg[T string | bool] struct {
 }
 
 type Args struct {
+	AllowlistFile arg[string]
 	File          arg[string]
 	FromEnv       arg[bool]
 	FromStdin     arg[bool]
+	Relaxed       arg[bool]
 	Version       arg[bool]
-	AllowlistFile arg[string]
 }
 
 func define[T string | bool](name string, value *T) arg[T] {
@@ -30,11 +31,12 @@ func define[T string | bool](name string, value *T) arg[T] {
 
 func InitializeCommandLine() *Args {
 	args := &Args{
+		AllowlistFile: define[string]("allowlist-file", flag.String("allowlist", "", "only re-export allowlisted variables")),
 		File:          define[string]("from-file", flag.String("from-file", "", "read from file")),
 		FromEnv:       define[bool]("from-env", flag.Bool("from-env", true, "read from environment variables")),
 		FromStdin:     define[bool]("from-stdin", flag.Bool("from-stdin", false, "read from stdin")),
+		Relaxed:       define[bool]("relaxed", flag.Bool("relaxed", false, "allows ALL variables to be re-exported")),
 		Version:       define[bool]("version", flag.Bool("version", false, "print version")),
-		AllowlistFile: define[string]("allowlist-file", flag.String("allowlist", "", "only re-export allowlisted variables")),
 	}
 
 	// Must parse after all flags are defined
