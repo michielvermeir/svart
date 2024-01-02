@@ -1,5 +1,10 @@
-<div>
-svart
+<div align="center">
+    <picture>
+        <source media="(prefers-color-scheme: dark; max-width: 100px)" srcset="https://github.com/michielvermeir/svart/blob/main/logo/svart.jpg">
+        <source media="(prefers-color-scheme: light; max-width: 100px)" srcset="https://github.com/michielvermeir/svart/blob/main/logo/svart.jpg">
+        <img alt="The svart logo, a stylized letter S " width="100" src="https://github.com/michielvermeir/svart/blob/main/logo/svart.jpg">
+    </picture>
+    <h1 style="text-transform: lowercase;">Svart</h1>
 </div>
 
 ____
