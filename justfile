@@ -13,6 +13,6 @@ install: build
 bump-version arg:
     version {{arg}}
 
-release: bump-version
+release: 
     git push
     git push --tags
