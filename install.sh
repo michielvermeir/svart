@@ -1,6 +1,19 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+info() {
+    echo "info: $1"
+}
+
+warn() {
+    echo "warn: $1"
+}
+
+error() {
+    echo "error: $1"
+    exit 1
+}
+
 install() {
     # allow overriding the version
     VERSION=${SVART_VERSION:-latest}
@@ -30,33 +43,40 @@ install() {
         DOWNLOAD_URL=https://github.com/${REPOSITORY}/releases/download/${VERSION}/${BINARY}
     fi
 
-    echo "info: script will automatically download and install svart (${VERSION}) for you."
+    if command -v jq &> /dev/null; then
+        version=$(curl -s https://api.github.com/repos/$REPOSITORY/releases/$VERSION | jq -r .name)
+        info "this script will automatically download and install svart (${version})"
+    else
+        info "this script will automatically download and install svart (${VERSION})"
+    fi
+
 
     if [ "X$(id -u)" == "X0" ]; then
-        echo "warning: this script is running as root.  This is dangerous and unnecessary!"
+        warn "this script is running as root.  This is dangerous and unnecessary!"
     fi
 
-    if ! hash curl 2> /dev/null; then
-        echo "error: you do not have 'curl' installed which is required for this script."
-        exit 1
+    if ! command -v 2> /dev/null; then
+        error "you do not have 'curl' installed which is required for this script."
     fi
 
-    if ! hash gunzip 2> /dev/null; then
-        echo "error: you do not have 'gunzip' installed which is required for this script."
-        exit 1
+    if ! command -v 2> /dev/null; then
+        error "error: you do not have 'gunzip' installed which is required for this script."
     fi
 
     TEMP_FILE=`mktemp "${TMPDIR:-/tmp}/.svartinstall.XXXXXXXX"`
 
     cleanup() {
         rm -f "$TEMP_FILE"
+        info "svart installed successfully"
+        svart --version
     }
 
     trap cleanup EXIT
-    HTTP_CODE=$(curl -SL "$DOWNLOAD_URL" --output "$TEMP_FILE" --write-out "%{http_code}")
+
+    echo "info: downloading $DOWNLOAD_URL"
+    HTTP_CODE=$(curl --progress-bar -SL "$DOWNLOAD_URL" --output "$TEMP_FILE" --write-out "%{http_code}")
     if [[ ${HTTP_CODE} -lt 200 || ${HTTP_CODE} -gt 299 ]]; then
-        echo "error: platform ${PLATFORM} (${ARCH}) is unsupported."
-        exit 1
+        error "platform ${PLATFORM} (${ARCH}) is unsupported."
     fi
 
     chmod +x "$TEMP_FILE"
@@ -69,7 +89,7 @@ install() {
         exit 1
     fi
 
-    echo "info: installing svart to /usr/local/bin"
+    info "installing svart to /usr/local/bin"
     exec sudo mv "$TEMP_FILE" /usr/local/bin/svart
 }
 
