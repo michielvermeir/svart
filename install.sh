@@ -3,9 +3,9 @@ set -euo pipefail
 
 install() {
     # allow overriding the version
-    VERSION=${TFVARS_VERSION:-latest}
+    VERSION=${SVART_VERSION:-latest}
 
-    REPOSITORY=michielvermeir/tfvars
+    REPOSITORY=michielvermeir/svart
     PLATFORM=`uname -s`
     ARCH=`uname -m`
 
@@ -21,7 +21,7 @@ install() {
         ARCH="amd64"
     fi
 
-    BINARY="tfvars-${PLATFORM}-${ARCH}"
+    BINARY="svart-${PLATFORM}-${ARCH}"
 
     # Oddly enough GitHub has different URLs for latest vs specific version
     if [[ $VERSION == "latest" ]]; then
@@ -30,7 +30,7 @@ install() {
         DOWNLOAD_URL=https://github.com/${REPOSITORY}/releases/download/${VERSION}/${BINARY}
     fi
 
-    echo "info: script will automatically download and install tfvars (${VERSION}) for you."
+    echo "info: script will automatically download and install svart (${VERSION}) for you."
 
     if [ "X$(id -u)" == "X0" ]; then
         echo "warning: this script is running as root.  This is dangerous and unnecessary!"
@@ -46,7 +46,7 @@ install() {
         exit 1
     fi
 
-    TEMP_FILE=`mktemp "${TMPDIR:-/tmp}/.tfvarsinstall.XXXXXXXX"`
+    TEMP_FILE=`mktemp "${TMPDIR:-/tmp}/.svartinstall.XXXXXXXX"`
 
     cleanup() {
         rm -f "$TEMP_FILE"
@@ -69,8 +69,8 @@ install() {
         exit 1
     fi
 
-    echo "info: installing tfvars to /usr/local/bin"
-    exec sudo mv "$TEMP_FILE" /usr/local/bin/tfvars
+    echo "info: installing svart to /usr/local/bin"
+    exec sudo mv "$TEMP_FILE" /usr/local/bin/svart
 }
 
 install

@@ -1,26 +1,26 @@
 <div>
-tfvars
+svart
 </div>
 
 ____
 
-tfvars is a small command-line utility for working with environment variables in Terraform. Tools like [direnv](https://direnv.net) or [Chamber](https://github.com/segmentio/chamber) allow you to automatically export environment variables for your application configuration, e.g. from a dotenv file or from a secrets managers.
+svart is a small command-line utility for working with environment variables in Terraform. Tools like [direnv](https://direnv.net) or [Chamber](https://github.com/segmentio/chamber) allow you to automatically export environment variables for your application configuration, e.g. from a dotenv file or from a secrets managers.
 
 If you want to be able to read these values inside your Terraform configuration, you would manually have to re-export 
 
 
 ## Usage
 
-The contents of a .env file can be re-exported by piping the contents to tfvars:
+The contents of a .env file can be re-exported by piping the contents to svart:
 
 ```shell
-cat .env | tfvars
+cat .env | svart
 ```
 
-In order to use tfvars in conjunction with direnv, it suffices to add the following to your .envrc file file:
+In order to use svart in conjunction with direnv, it suffices to add the following to your .envrc file file:
 
 ```shell
-<(cat .envrc | tfvars)
+<(cat .envrc | svart)
 ```
 
-tfvars will ignore all the input
+svart will ignore all the input

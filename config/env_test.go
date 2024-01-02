@@ -24,34 +24,34 @@ func (assertion Assertion[T]) Equals(expected T) {
 }
 
 func TestGetenvFallback(t *testing.T) {
-	Assert(t, Getenv("TFVARS_ALLOWED", "fallback*")).Equals("fallback*")
+	Assert(t, Getenv("SVART_ALLOWED", "fallback*")).Equals("fallback*")
 }
 
 func TestGetenvActual(t *testing.T) {
-	os.Setenv("TFVARS_ALLOWED", "test*")
-	Assert(t, Getenv("TFVARS_ALLOWED", "fallback*")).Equals("test*")
+	os.Setenv("SVART_ALLOWED", "test*")
+	Assert(t, Getenv("SVART_ALLOWED", "fallback*")).Equals("test*")
 }
 
 func TestIsAllowedWildcardTrue(t *testing.T) {
-	os.Setenv("TFVARS_ALLOWED", "*")
+	os.Setenv("SVART_ALLOWED", "*")
 	actual, _ := IsAllowed("foo")
 	Assert(t, actual).Equals(true)
 }
 
 func TestIsAllowedWildcardPrefixTrue(t *testing.T) {
-	os.Setenv("TFVARS_ALLOWED", "foo*")
+	os.Setenv("SVART_ALLOWED", "foo*")
 	actual, _ := IsAllowed("foo")
 	Assert(t, actual).Equals(true)
 }
 
 func TestIsAllowedLiteralTrue(t *testing.T) {
-	os.Setenv("TFVARS_ALLOWED", "foo")
+	os.Setenv("SVART_ALLOWED", "foo")
 	actual, _ := IsAllowed("foo")
 	Assert(t, actual).Equals(true)
 }
 
 func TestIsAllowedLiteralsTrue(t *testing.T) {
-	os.Setenv("TFVARS_ALLOWED", "bar,foo")
+	os.Setenv("SVART_ALLOWED", "bar,foo")
 
 	actual1, _ := IsAllowed("foo")
 	Assert(t, actual1).Equals(true)
@@ -61,7 +61,7 @@ func TestIsAllowedLiteralsTrue(t *testing.T) {
 }
 
 func TestIsAllowedLiteralsFalse(t *testing.T) {
-	os.Setenv("TFVARS_ALLOWED", "bar,baz")
+	os.Setenv("SVART_ALLOWED", "bar,baz")
 
 	actual, _ := IsAllowed("foo")
 	Assert(t, actual).Equals(true)

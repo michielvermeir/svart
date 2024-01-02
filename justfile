@@ -1,11 +1,11 @@
 build:
-    go build -v -o tfvars . 
-    du -sh tfvars
+    go build -v -o svart . 
+    du -sh svart
 
 run: build
-    ./tfvars
+    ./svart
 
 install: build
-    cp tfvars /usr/local/bin/tfvars
+    cp svart /usr/local/bin/svart
 
     

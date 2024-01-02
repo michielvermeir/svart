@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"tfvars/cli"
-	"tfvars/exports"
-	"tfvars/inputs"
+	"svart/cli"
+	"svart/exports"
+	"svart/inputs"
 )
 
 var (
@@ -15,7 +15,7 @@ var (
 	res embed.FS
 )
 
-var Stderr = log.New(os.Stderr, "tfvars: ", 0)
+var Stderr = log.New(os.Stderr, "svart: ", 0)
 
 func getAppVersion() string {
 	version, _ := res.ReadFile("VERSION")
@@ -36,14 +36,18 @@ func main() {
 		os.Exit(0)
 	}
 
-	inputs := inputs.Get(args)
-	tfvars := exports.Build(inputs)
+	if *args.Prudent.Value {
+		os.Setenv("SVART_BLOCKED", "*")
+	}
 
-	if len(tfvars) == 0 {
+	inputs := inputs.Get(args)
+	svart := exports.Build(inputs)
+
+	if len(svart) == 0 {
 		Stderr.Fatalf("no variables to re-export\n")
 	}
 
-	for _, tfvar := range tfvars {
+	for _, tfvar := range svart {
 		fmt.Printf("export %s\n", tfvar)
 	}
 

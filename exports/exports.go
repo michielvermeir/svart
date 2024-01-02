@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
-	"tfvars/config"
+	"svart/config"
 
 	"github.com/direnv/go-dotenv"
 )
@@ -21,7 +21,7 @@ type Line struct {
 }
 
 func (m *Line) AsPrefixed() string {
-	prefix := config.Getenv("TFVARS_PREFIX", "TF_VAR_")
+	prefix := config.Getenv("SVART_PREFIX", "TF_VAR_")
 	return fmt.Sprintf("%s%s=%s", prefix, strings.ToLower(m.Name), m.Value)
 }
 
@@ -31,7 +31,7 @@ func matchLine(line string) *Line {
 	if match {
 		parsed, _ := dotenv.Parse(line)
 		for name, value := range parsed {
-			if !config.IsBlocked(name) && config.IsAllowed(name) {
+			if config.IsAllowed(name) || !config.IsBlocked(name) {
 				return &Line{Name: name, Value: value}
 			}
 		}
@@ -41,14 +41,14 @@ func matchLine(line string) *Line {
 }
 
 func Build(buffer *bufio.Scanner) []string {
-	var tfvars = []string{}
+	var svart = []string{}
 
 	for buffer.Scan() {
 		currentLine := buffer.Text()
 		match := matchLine(currentLine)
 
 		if match != nil {
-			tfvars = append(tfvars, match.AsPrefixed())
+			svart = append(svart, match.AsPrefixed())
 		}
 	}
 
@@ -56,6 +56,6 @@ func Build(buffer *bufio.Scanner) []string {
 		fmt.Println(err)
 	}
 
-	sort.Strings(tfvars)
-	return tfvars
+	sort.Strings(svart)
+	return svart
 }

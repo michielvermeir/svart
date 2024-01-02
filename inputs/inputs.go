@@ -5,10 +5,10 @@ import (
 	"log"
 	"os"
 	"strings"
-	"tfvars/cli"
+	"svart/cli"
 )
 
-var Stderr = log.New(os.Stderr, "tfvars: ", 0)
+var Stderr = log.New(os.Stderr, "svart: ", 0)
 
 func isStdinEmpty() bool {
 	stdin, _ := os.Stdin.Stat()

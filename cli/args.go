@@ -13,6 +13,7 @@ type Args struct {
 	File      arg[string]
 	FromStdin arg[bool]
 	FromEnv   arg[bool]
+	Prudent   arg[bool]
 }
 
 func define[T string | bool](name string, value *T) arg[T] {
@@ -33,6 +34,7 @@ func Initialize() *Args {
 		FromStdin: define[bool]("from-stdin", flag.Bool("from-stdin", false, "read from stdin")),
 		FromEnv:   define[bool]("from-env", flag.Bool("from-env", true, "read from environment variables")),
 		File:      define[string]("from-file", flag.String("from-file", "", "read from file")),
+		Prudent:   define[bool]("prudent", flag.Bool("prudent", false, "prudent mode (all variables blocked)")),
 	}
 
 	// Must parse after all flags are defined

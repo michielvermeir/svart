@@ -1,4 +1,4 @@
-module tfvars
+module svart
 
 go 1.21.5
 

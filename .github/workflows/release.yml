@@ -56,8 +56,8 @@ jobs:
       env:
         GO111MODULE: on
       run: |-
-        GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -v -o tfvars
-        mv tfvars tfvars-${{ matrix.os }}-${{ matrix.arch }}
+        GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -v -o svart
+        mv svart svart-${{ matrix.os }}-${{ matrix.arch }}
 
     - name: Upload release asset
       run: |-
@@ -65,6 +65,6 @@ jobs:
 
         gh repo view
         gh release view ${{ github.ref_name }}
-        gh release upload ${{ github.ref_name }} ./tfvars-${{ matrix.os }}-${{ matrix.arch }}
+        gh release upload ${{ github.ref_name }} ./svart-${{ matrix.os }}-${{ matrix.arch }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

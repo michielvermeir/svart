@@ -8,7 +8,7 @@ import (
 	filepath "path/filepath"
 )
 
-var Stderr = log.New(os.Stderr, "tfvars: ", 0)
+var Stderr = log.New(os.Stderr, "svart: ", 0)
 
 func Getenv(name, fallback string) string {
 	if _, found := os.LookupEnv(name); !found {
@@ -18,7 +18,7 @@ func Getenv(name, fallback string) string {
 }
 
 func IsAllowed(name string) bool {
-	allowed := Getenv("TFVARS_ALLOWED", "*")
+	allowed := Getenv("SVART_ALLOWED", "*")
 
 	// Stderr.Printf("allowed %s\n", allowed)
 
@@ -31,7 +31,7 @@ func IsAllowed(name string) bool {
 }
 
 func IsBlocked(name string) bool {
-	blocked := Getenv("TFVARS_BLOCKED", "AWS_*")
+	blocked := Getenv("SVART_BLOCKED", "AWS_*")
 
 	// Stderr.Printf("blocked %s\n", blocked)
 
