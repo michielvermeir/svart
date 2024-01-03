@@ -36,8 +36,12 @@ func main() {
 
 	os.Setenv("SVART_RELAXED_MODE", strconv.FormatBool(*args.Relaxed.Value))
 
-	if *args.AllowlistFile.Value != "" {
-		os.Setenv("SVART_ALLOWLIST_FILE", *args.AllowlistFile.Value)
+	if *args.Prefix.Value != "" {
+		os.Setenv("SVART_PREFIX", *args.Prefix.Value)
+	}
+
+	if *args.Filter.Value != "" {
+		os.Setenv("SVART_ALLOWLIST_FILE", *args.Filter.Value)
 	}
 
 	inputs := GetCommandLineInputs(args)
