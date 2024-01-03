@@ -42,8 +42,9 @@ func IsExportAllowed(name string) bool {
 	allowed := GetAllowed()
 
 	for _, pattern := range allowed {
-		match, _ := filepath.Match(pattern, name)
-		return match
+		if match, _ := filepath.Match(pattern, name); match {
+			return true
+		}
 	}
 
 	return false
