@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"strconv"
+	"syscall"
 )
 
 var (
@@ -45,17 +47,35 @@ func main() {
 	}
 
 	inputs := GetCommandLineInputs(args)
-	svart := BuildExports(inputs)
+	svartEnv := BuildExports(inputs)
 
-	if len(svart) == 0 {
+	if len(svartEnv) == 0 {
 		Stderr.Fatalf("no variables to re-export\n")
 	}
 
+	if len(os.Args) < 2 {
+		exportSvartEnv(svartEnv)
+	}
+
+	binary := os.Args[1]
+	execArgs := os.Args[1:]
+
+	binaryPath, err := exec.LookPath(binary)
+
+	if err != nil {
+		Stderr.Fatalf("something went wrong %s\n", err)
+	}
+
+	execEnv := append(os.Environ(), svartEnv...)
+	execErr := syscall.Exec(binaryPath, execArgs, execEnv)
+
+	if execErr != nil {
+		Stderr.Fatalf("%s\n", execErr)
+	}
+}
+
+func exportSvartEnv(svart []string) {
 	for _, tfvar := range svart {
 		fmt.Printf("export %s\n", tfvar)
 	}
-
-	// if err != nil {
-	// 	stderr.Fatalf("something went wrong %s\n", err)
-	// }
 }
