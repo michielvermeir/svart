@@ -8,7 +8,7 @@ type arg[T string | bool] struct {
 	IsSet func() bool
 }
 
-type Args struct {
+type Flags struct {
 	File      arg[string]
 	Filter    arg[string]
 	FromEnv   arg[bool]
@@ -30,8 +30,10 @@ func define[T string | bool](name string, value *T) arg[T] {
 	}
 }
 
-func InitializeCommandLine() *Args {
-	args := &Args{
+type Args []string
+
+func InitializeCommandLine() (*Flags, Args) {
+	flags := &Flags{
 		File:      define[string]("from-file", flag.String("from-file", "", "read from file")),
 		Filter:    define[string]("filter", flag.String("filter", "", "filter input variables")),
 		FromEnv:   define[bool]("from-env", flag.Bool("from-env", true, "read from environment variables")),
@@ -43,5 +45,5 @@ func InitializeCommandLine() *Args {
 
 	// Must parse after all flags are defined
 	flag.Parse()
-	return args
+	return flags, flag.Args()
 }

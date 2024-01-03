@@ -7,7 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
-	"syscall"
+	"strings"
 )
 
 var (
@@ -28,46 +28,55 @@ func main() {
 	// Disable timestamp in log output
 	log.SetFlags(0)
 
-	args := InitializeCommandLine()
+	flags, args := InitializeCommandLine()
 
 	Stderr.Printf("version %s\n", getAppVersion())
 
-	if *args.Version.Value {
+	if *flags.Version.Value {
 		os.Exit(0)
 	}
 
-	os.Setenv("SVART_RELAXED_MODE", strconv.FormatBool(*args.Relaxed.Value))
+	os.Setenv("SVART_RELAXED_MODE", strconv.FormatBool(*flags.Relaxed.Value))
 
-	if *args.Prefix.Value != "" {
-		os.Setenv("SVART_PREFIX", *args.Prefix.Value)
+	if *flags.Prefix.Value != "" {
+		os.Setenv("SVART_PREFIX", *flags.Prefix.Value)
 	}
 
-	if *args.Filter.Value != "" {
-		os.Setenv("SVART_DOTENV_FILTER", *args.Filter.Value)
+	if *flags.Filter.Value != "" {
+		os.Setenv("SVART_DOTENV_FILTER", *flags.Filter.Value)
 	}
 
-	inputs := GetCommandLineInputs(args)
+	inputs := GetCommandLineInputs(flags)
 	svartEnv := BuildExports(inputs)
 
 	if len(svartEnv) == 0 {
 		Stderr.Fatalf("no variables to re-export\n")
 	}
 
-	if len(os.Args) < 2 {
+	if len(args) < 1 {
 		exportSvartEnv(svartEnv)
+		return
 	}
 
-	binary := os.Args[1]
-	execArgs := os.Args[1:]
+	executable := args[0]
+	execArgs := args[1:]
 
-	binaryPath, err := exec.LookPath(binary)
+	executablePath, err := exec.LookPath(executable)
 
 	if err != nil {
 		Stderr.Fatalf("something went wrong %s\n", err)
 	}
 
 	execEnv := append(os.Environ(), svartEnv...)
-	execErr := syscall.Exec(binaryPath, execArgs, execEnv)
+	command := exec.Command(executablePath, execArgs...)
+	command.Env = execEnv
+
+	command.Stdout = os.Stdout
+	command.Stderr = os.Stderr
+	command.Stdin = os.Stdin
+
+	Stderr.Printf("executing %s\n", strings.Join(append([]string{executablePath}, execArgs...), " "))
+	execErr := command.Run()
 
 	if execErr != nil {
 		Stderr.Fatalf("%s\n", execErr)

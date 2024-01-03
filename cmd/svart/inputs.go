@@ -12,12 +12,12 @@ func isStdinEmpty() bool {
 }
 
 type input interface {
-	get(args *Args) *bufio.Scanner
+	get(args *Flags) *bufio.Scanner
 }
 
 type stdin struct{}
 
-func (input *stdin) get(args *Args) *bufio.Scanner {
+func (input *stdin) get(args *Flags) *bufio.Scanner {
 	Stderr.Print("reading from stdin\n")
 
 	if isStdinEmpty() {
@@ -29,7 +29,7 @@ func (input *stdin) get(args *Args) *bufio.Scanner {
 
 type file struct{}
 
-func (input *file) get(args *Args) *bufio.Scanner {
+func (input *file) get(args *Flags) *bufio.Scanner {
 	Stderr.Printf("reading from file %s\n", *args.File.Value)
 
 	file, err := os.Open(*args.File.Value)
@@ -42,7 +42,7 @@ func (input *file) get(args *Args) *bufio.Scanner {
 
 type environ struct{}
 
-func (input *environ) get(args *Args) *bufio.Scanner {
+func (input *environ) get(args *Flags) *bufio.Scanner {
 	Stderr.Print("reading from environment variables\n")
 
 	return bufio.NewScanner(
@@ -50,7 +50,7 @@ func (input *environ) get(args *Args) *bufio.Scanner {
 	)
 }
 
-func reify(args *Args) input {
+func reify(args *Flags) input {
 	if *args.FromStdin.Value {
 		return &stdin{}
 	}
@@ -64,6 +64,6 @@ func reify(args *Args) input {
 }
 
 // Gets a scanner for the appropriate input source (env, file or stdin)
-func GetCommandLineInputs(cliArgs *Args) *bufio.Scanner {
+func GetCommandLineInputs(cliArgs *Flags) *bufio.Scanner {
 	return reify(cliArgs).get(cliArgs)
 }
