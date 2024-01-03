@@ -8,7 +8,7 @@ run: build
     exec ./bin/svart
 
 install: build
-    exec cp svart /usr/local/bin/svart
+    exec cp $GOPATH/bin/svart /usr/local/bin/svart
 
 bump-version arg:
     version {{arg}}
