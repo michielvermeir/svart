@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -euxo pipefail
 
 info() {
     echo "info: $1"
@@ -90,7 +90,7 @@ install() {
     fi
 
     info "installing svart to /usr/local/bin"
-    exec sudo mv "$TEMP_FILE" /usr/local/bin/svart
+    mv "$TEMP_FILE" /usr/local/bin/svart || sudo mv "$TEMP_FILE" /usr/local/bin/svart
 }
 
 install
