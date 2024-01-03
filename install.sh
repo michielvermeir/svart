@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euxo pipefail
+set -euo pipefail
 
 info() {
     echo "info: $1"
@@ -28,11 +28,14 @@ install() {
         PLATFORM="linux"
     fi
 
-    if [[ $ARCH == armv8* ]] || [[ $ARCH == arm64* ]] || [[ $ARCH == aarch64* ]]; then
-        ARCH="arm64"
-    elif [[ $ARCH == i686* ]]; then
-        ARCH="amd64"
-    fi
+    case $ARCH in
+        armv8*|arm64*|aarch64*)
+            ARCH="arm64"
+            ;;
+        i686*|x86_64*)
+            ARCH="amd64"
+            ;;
+    esac
 
     BINARY="svart-${PLATFORM}-${ARCH}"
 
