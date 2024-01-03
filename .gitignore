@@ -23,3 +23,5 @@ go.work
 # Go build binaries
 bin/
 .direnv/
+
+.envrc
