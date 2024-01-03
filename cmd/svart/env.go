@@ -16,7 +16,7 @@ func Getenv(name, fallback string) string {
 }
 
 func GetAllowed() []string {
-	allowlistFile := os.Getenv("SVART_ALLOWLIST_FILE")
+	allowlistFile := os.Getenv("SVART_DOTENV_FILTER")
 
 	// Stderr.Printf("allowlist file %s\n", file)
 	if len(allowlistFile) != 0 {
@@ -25,7 +25,7 @@ func GetAllowed() []string {
 		return allowed
 	}
 
-	allowlistPatterns := os.Getenv("SVART_ALLOWLIST")
+	allowlistPatterns := os.Getenv("SVART_FILTERS")
 	if len(allowlistPatterns) != 0 {
 		return strings.Split(allowlistPatterns, ",")
 	}

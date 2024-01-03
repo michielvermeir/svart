@@ -41,7 +41,7 @@ func main() {
 	}
 
 	if *args.Filter.Value != "" {
-		os.Setenv("SVART_ALLOWLIST_FILE", *args.Filter.Value)
+		os.Setenv("SVART_DOTENV_FILTER", *args.Filter.Value)
 	}
 
 	inputs := GetCommandLineInputs(args)
